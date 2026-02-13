@@ -1,0 +1,91 @@
+.header {
+  background-color: #333;
+  color: white;
+  padding: 15px 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  text-decoration: none;
+  color: white;
+}
+
+.logo h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav a, .logout-btn {
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.nav a:hover {
+  background-color: #555;
+}
+
+.cart-link {
+  background-color: #007bff;
+}
+
+.cart-link:hover {
+  background-color: #0056b3;
+}
+
+.auth-link {
+  background-color: #28a745;
+}
+
+.auth-link:hover {
+  background-color: #218838;
+}
+
+.register-link {
+  background-color: #667eea;
+}
+
+.register-link:hover {
+  background-color: #5568d3;
+}
+
+.user-menu {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.user-name {
+  font-size: 14px;
+  color: #eee;
+}
+
+.logout-btn {
+  background-color: #dc3545;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+.logout-btn:hover {
+  background-color: #c82333;
+}
+
