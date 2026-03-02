@@ -2,6 +2,64 @@ import { Product } from '../models/Product.js';
 import cloudinary from '../utils/cloudinary.js';
 import { uploadFromBuffer } from '../utils/cloudinary.js';
 
+// Seed defaults for first-time database setup.
+const SAMPLE_PRODUCTS = [
+  {
+    name: 'Laptop',
+    description: 'High-performance laptop with 16GB RAM and SSD',
+    price: 999.99,
+    image: 'https://via.placeholder.com/200?text=Laptop',
+    stock: 50
+  },
+  {
+    name: 'Mouse',
+    description: 'Wireless ergonomic mouse',
+    price: 29.99,
+    image: 'https://via.placeholder.com/200?text=Mouse',
+    stock: 200
+  },
+  {
+    name: 'Keyboard',
+    description: 'Mechanical gaming keyboard with RGB',
+    price: 79.99,
+    image: 'https://via.placeholder.com/200?text=Keyboard',
+    stock: 150
+  },
+  {
+    name: 'Monitor',
+    description: '27" 4K UHD Monitor',
+    price: 399.99,
+    image: 'https://via.placeholder.com/200?text=Monitor',
+    stock: 75
+  },
+  {
+    name: 'Headphones',
+    description: 'Active noise-cancelling headphones',
+    price: 199.99,
+    image: 'https://via.placeholder.com/200?text=Headphones',
+    stock: 100
+  },
+  {
+    name: 'Webcam',
+    description: '1080p HD webcam',
+    price: 89.99,
+    image: 'https://via.placeholder.com/200?text=Webcam',
+    stock: 120
+  }
+];
+
+export const initializeProducts = async () => {
+  try {
+    const existingProducts = await Product.countDocuments();
+    if (existingProducts > 0) return;
+
+    await Product.insertMany(SAMPLE_PRODUCTS);
+    console.log('Sample products initialized');
+  } catch (error) {
+    console.error('Error initializing products:', error);
+  }
+};
+
 // Get all products
 export const getAllProducts = async (req, res) => {
   try {
