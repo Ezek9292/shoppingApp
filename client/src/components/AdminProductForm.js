@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { API_BASE_URL } from '../config/api';
 import './AdminProductForm.css';
 
 export default function AdminProductForm({ product, adminToken, onSuccess, onCancel }) {
@@ -75,10 +76,9 @@ export default function AdminProductForm({ product, adminToken, onSuccess, onCan
     setLoading(true);
 
     try {
-      const baseURL = process.env.REACT_APP_API_BASE || 'http://localhost:5002';
       const url = product
-        ? `${baseURL}/api/admin/products/${product._id}`
-        : `${baseURL}/api/admin/products`;
+        ? `${API_BASE_URL}/api/admin/products/${product._id}`
+        : `${API_BASE_URL}/api/admin/products`;
       const method = product ? 'PUT' : 'POST';
 
       const res = await fetch(url, {

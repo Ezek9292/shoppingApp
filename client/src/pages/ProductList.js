@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
+import { API_BASE_URL } from '../config/api';
 import './ProductList.css';
 
 const ProductList = ({ addToCart }) => {
@@ -11,8 +12,7 @@ const ProductList = ({ addToCart }) => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const baseURL = process.env.REACT_APP_API_BASE || 'http://localhost:5002';
-        const response = await fetch(`${baseURL}/api/products`);
+        const response = await fetch(`${API_BASE_URL}/api/products`);
         if (!response.ok) throw new Error('Failed to fetch products');
         const data = await response.json();
         setProducts(data);
@@ -37,7 +37,7 @@ const ProductList = ({ addToCart }) => {
       <div className="products-grid">
         {products.map(product => (
           <ProductCard
-            key={product.id}
+            key={product._id || product.id}
             product={product}
             onAddToCart={addToCart}
           />

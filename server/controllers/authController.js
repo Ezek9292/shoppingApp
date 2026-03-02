@@ -122,7 +122,8 @@ export const login = async (req, res) => {
         userId: user._id,
         email: user.email,
         firstName: user.firstName,
-        lastName: user.lastName
+        lastName: user.lastName,
+        isAdmin: user.isAdmin
       }
     });
   } catch (error) {
@@ -143,7 +144,8 @@ export const getProfile = async (req, res) => {
         userId: user._id,
         email: user.email,
         firstName: user.firstName,
-        lastName: user.lastName
+        lastName: user.lastName,
+        isAdmin: user.isAdmin
       }
     });
   } catch (error) {

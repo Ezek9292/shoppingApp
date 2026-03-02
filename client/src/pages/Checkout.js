@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { API_BASE_URL } from '../config/api';
 import './Checkout.css';
 
 const Checkout = ({ cartItems }) => {
@@ -25,21 +26,10 @@ const Checkout = ({ cartItems }) => {
 
   const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-  // Handle payment verification after redirect from Paystack
-  useEffect(() => {
-    const reference = searchParams.get('reference');
-    const orderId = searchParams.get('orderId');
-    
-    if (reference && orderId && isAuthenticated) {
-      verifyPaystackPayment(reference, orderId);
-    }
-  }, [searchParams, isAuthenticated, token]);
-
-  const verifyPaystackPayment = async (reference, orderId) => {
+  const verifyPaystackPayment = useCallback(async (reference, orderId) => {
     setVerifyingPayment(true);
     try {
-      const baseURL = process.env.REACT_APP_API_BASE || 'http://localhost:5002';
-      const response = await fetch(`${baseURL}/api/payment/verify`, {
+      const response = await fetch(`${API_BASE_URL}/api/payment/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +51,17 @@ const Checkout = ({ cartItems }) => {
     } finally {
       setVerifyingPayment(false);
     }
-  };
+  }, [navigate, token]);
+
+  // Handle payment verification after redirect from Paystack
+  useEffect(() => {
+    const reference = searchParams.get('reference');
+    const orderId = searchParams.get('orderId');
+    
+    if (reference && orderId && isAuthenticated) {
+      verifyPaystackPayment(reference, orderId);
+    }
+  }, [isAuthenticated, searchParams, verifyPaystackPayment]);
 
   if (!isAuthenticated) {
     return (
@@ -86,8 +86,7 @@ const Checkout = ({ cartItems }) => {
     setError('');
 
     try {
-      const baseURL = process.env.REACT_APP_API_BASE || 'http://localhost:5002';
-      const response = await fetch(`${baseURL}/api/checkout`, {
+      const response = await fetch(`${API_BASE_URL}/api/checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -117,8 +116,7 @@ const Checkout = ({ cartItems }) => {
     setError('');
 
     try {
-      const baseURL = process.env.REACT_APP_API_BASE || 'http://localhost:5002';
-      const response = await fetch(`${baseURL}/api/payment/initialize`, {
+      const response = await fetch(`${API_BASE_URL}/api/payment/initialize`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -136,8 +134,7 @@ const Checkout = ({ cartItems }) => {
 
       const data = await response.json();
       if (data.success) {
-        // Redirect to Paystack payment page with return URL
-        const returnUrl = `${window.location.origin}/checkout?reference=${data.reference}&orderId=${data.orderId}`;
+        // Redirect to Paystack payment page
         window.location.href = data.authorization_url;
       } else {
         setError('Failed to initialize payment');

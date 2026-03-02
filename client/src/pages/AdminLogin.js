@@ -10,6 +10,7 @@ export default function AdminLogin() {
   const [isRegister, setIsRegister] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [adminSecret, setAdminSecret] = useState('');
   const { loginAdmin, createAdmin, loading } = useAdmin();
   const navigate = useNavigate();
 
@@ -18,7 +19,7 @@ export default function AdminLogin() {
     setError('');
     try {
       if (isRegister) {
-        await createAdmin(email, password, firstName, lastName);
+        await createAdmin(email, password, firstName, lastName, adminSecret);
       } else {
         await loginAdmin(email, password);
       }
@@ -49,6 +50,13 @@ export default function AdminLogin() {
                 placeholder="Last Name"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
+                required
+              />
+              <input
+                type="password"
+                placeholder="Admin Setup Secret"
+                value={adminSecret}
+                onChange={(e) => setAdminSecret(e.target.value)}
                 required
               />
             </>

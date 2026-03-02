@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { API_BASE_URL } from '../config/api';
 import './ProductDetail.css';
 
 const ProductDetail = ({ addToCart }) => {
@@ -17,8 +18,7 @@ const ProductDetail = ({ addToCart }) => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const baseURL = process.env.REACT_APP_API_BASE || 'http://localhost:5002';
-        const response = await fetch(`${baseURL}/api/products/${id}`);
+        const response = await fetch(`${API_BASE_URL}/api/products/${id}`);
         if (!response.ok) throw new Error('Product not found');
         const data = await response.json();
         setProduct(data);

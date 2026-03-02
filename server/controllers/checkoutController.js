@@ -140,13 +140,31 @@ export const verifyPayment = async (req, res) => {
 // Legacy checkout (card payment - kept for backward compatibility)
 export const checkout = async (req, res) => {
   try {
-    const { firstName, lastName, email, address, cardNumber, expiryDate, cvv, items, total } = req.body;
+    const { firstName, lastName, email, address, cardNumber, expiryDate, cvv, items } = req.body;
     const userId = req.userId;
 
     // Validate data
     const validation = validateOrderData({ firstName, lastName, email, address });
     if (!validation.valid) {
       return res.status(400).json({ error: validation.error });
+    }
+
+    // Calculate total from DB
+    let calculatedTotal = 0;
+    const orderItems = [];
+
+    for (const item of items) {
+      const product = await Product.findById(item._id || item.id);
+      if (!product) {
+        return res.status(404).json({ error: `Product not found: ${item.name}` });
+      }
+      calculatedTotal += product.price * item.quantity;
+      orderItems.push({
+        _id: product._id,
+        name: product.name,
+        quantity: item.quantity,
+        price: product.price
+      });
     }
 
     // Create order object with user association
@@ -156,8 +174,8 @@ export const checkout = async (req, res) => {
       lastName,
       email,
       address,
-      items,
-      total,
+      items: orderItems,
+      total: calculatedTotal,
       status: 'completed',
       paymentMethod: 'card',
       cardLast4: cardNumber.slice(-4)
@@ -169,7 +187,7 @@ export const checkout = async (req, res) => {
       success: true,
       message: 'Payment processed successfully',
       orderId: order._id,
-      total
+      total: calculatedTotal
     });
   } catch (error) {
     console.error('Checkout error:', error);

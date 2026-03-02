@@ -1,64 +1,6 @@
 import { Product } from '../models/Product.js';
+import cloudinary from '../utils/cloudinary.js';
 import { uploadFromBuffer } from '../utils/cloudinary.js';
-
-// Sample product data for initialization
-const SAMPLE_PRODUCTS = [
-  {
-    name: 'Laptop',
-    description: 'High-performance laptop with 16GB RAM and SSD',
-    price: 999.99,
-    image: 'https://via.placeholder.com/200?text=Laptop',
-    stock: 50
-  },
-  {
-    name: 'Mouse',
-    description: 'Wireless ergonomic mouse',
-    price: 29.99,
-    image: 'https://via.placeholder.com/200?text=Mouse',
-    stock: 200
-  },
-  {
-    name: 'Keyboard',
-    description: 'Mechanical gaming keyboard with RGB',
-    price: 79.99,
-    image: 'https://via.placeholder.com/200?text=Keyboard',
-    stock: 150
-  },
-  {
-    name: 'Monitor',
-    description: '27" 4K UHD Monitor',
-    price: 399.99,
-    image: 'https://via.placeholder.com/200?text=Monitor',
-    stock: 75
-  },
-  {
-    name: 'Headphones',
-    description: 'Active noise-cancelling headphones',
-    price: 199.99,
-    image: 'https://via.placeholder.com/200?text=Headphones',
-    stock: 100
-  },
-  {
-    name: 'Webcam',
-    description: '1080p HD webcam',
-    price: 89.99,
-    image: 'https://via.placeholder.com/200?text=Webcam',
-    stock: 120
-  }
-];
-
-// Initialize products (run once)
-export const initializeProducts = async () => {
-  try {
-    const existingProducts = await Product.countDocuments();
-    if (existingProducts === 0) {
-      await Product.insertMany(SAMPLE_PRODUCTS);
-      console.log('Sample products initialized');
-    }
-  } catch (error) {
-    console.error('Error initializing products:', error);
-  }
-};
 
 // Get all products
 export const getAllProducts = async (req, res) => {
@@ -106,6 +48,12 @@ export const uploadProductImage = async (req, res) => {
     if (productId) {
       const product = await Product.findById(productId);
       if (!product) return res.status(404).json({ error: 'Product not found' });
+      
+      // Clean up old image
+      if (product.imageId) {
+        try { await cloudinary.uploader.destroy(product.imageId); } catch (e) { console.error('Cloudinary delete error', e); }
+      }
+
       product.image = result.secure_url;
       product.imageId = result.public_id;
       await product.save();
@@ -118,4 +66,3 @@ export const uploadProductImage = async (req, res) => {
     res.status(500).json({ error: 'Failed to upload image' });
   }
 };
-

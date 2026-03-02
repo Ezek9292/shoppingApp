@@ -1,4 +1,5 @@
 import React, { createContext, useState, useCallback, useEffect } from 'react';
+import { API_BASE_URL } from '../config/api';
 
 export const AuthContext = createContext();
 
@@ -20,8 +21,7 @@ const AuthProvider = ({ children }) => {
 
   const register = useCallback(async (email, password, firstName, lastName) => {
     try {
-      const baseURL = process.env.REACT_APP_API_BASE || 'http://localhost:5002';
-      const response = await fetch(`${baseURL}/api/auth/register`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, firstName, lastName })
@@ -45,8 +45,7 @@ const AuthProvider = ({ children }) => {
 
   const login = useCallback(async (email, password) => {
     try {
-      const baseURL = process.env.REACT_APP_API_BASE || 'http://localhost:5002';
-      const response = await fetch(`${baseURL}/api/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })

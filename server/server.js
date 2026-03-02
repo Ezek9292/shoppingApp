@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
 import productRoutes from './routes/products.js';
 import checkoutRoutes from './routes/checkout.js';
 import authRoutes from './routes/auth.js';
@@ -10,12 +9,14 @@ import connectDB from './config/db.js';
 
 
 const app = express();
-const { PORT = 5000, MONGODB_URI } = process.env;
+const { PORT = 5000, CORS_ORIGIN } = process.env;
 
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: CORS_ORIGIN ? CORS_ORIGIN.split(',').map((origin) => origin.trim()) : '*'
+}));
 app.use(express.json());
 
 // Routes
@@ -30,9 +31,12 @@ app.get('/', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
+  if (res.headersSent) return next(err);
   console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
+  res.status(500).json({
+    error: process.env.NODE_ENV === 'production' ? 'Internal server error' : 'Something went wrong!'
+  });
 });
 
 app.listen(PORT, () => {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AdminProductForm from './AdminProductForm';
+import { API_BASE_URL } from '../config/api';
 import './AdminProductList.css';
 
 export default function AdminProductList({ products, adminToken, onProductsUpdate }) {
@@ -9,8 +10,7 @@ export default function AdminProductList({ products, adminToken, onProductsUpdat
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this product?')) return;
     try {
-      const baseURL = process.env.REACT_APP_API_BASE || 'http://localhost:5002';
-      const res = await fetch(`${baseURL}/api/admin/products/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/admin/products/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${adminToken}` }
       });

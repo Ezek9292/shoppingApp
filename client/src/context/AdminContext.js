@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config/api';
 
 const AdminContext = createContext();
 
@@ -14,15 +15,17 @@ export const AdminProvider = ({ children }) => {
     }
   }, [adminToken]);
 
-  const createAdmin = async (email, password, firstName, lastName) => {
+  const createAdmin = async (email, password, firstName, lastName, secret) => {
     setLoading(true);
     try {
-      const baseURL = process.env.REACT_APP_API_BASE || 'http://localhost:5002';
-      const ADMIN_SECRET = process.env.REACT_APP_ADMIN_SECRET || 'super-secret-key';
-      const res = await fetch(`${baseURL}/api/auth/create-admin`, {
+      if (!secret) {
+        throw new Error('Admin setup secret is required');
+      }
+
+      const res = await fetch(`${API_BASE_URL}/api/auth/create-admin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, firstName, lastName, secret: ADMIN_SECRET })
+        body: JSON.stringify({ email, password, firstName, lastName, secret })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -38,8 +41,7 @@ export const AdminProvider = ({ children }) => {
   const loginAdmin = async (email, password) => {
     setLoading(true);
     try {
-      const baseURL = process.env.REACT_APP_API_BASE || 'http://localhost:5002';
-      const res = await fetch(`${baseURL}/api/auth/login`, {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })

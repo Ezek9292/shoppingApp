@@ -1,14 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '../context/AdminContext';
 import AdminProductList from '../components/AdminProductList';
+import { API_BASE_URL } from '../config/api';
 import './AdminDashboard.css';
 
 export default function AdminDashboard() {
   const { adminToken, logoutAdmin, admin } = useAdmin();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+  const fetchProducts = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/products`, {
+        headers: { Authorization: `Bearer ${adminToken}` }
+      });
+      if (res.ok) setProducts(await res.json());
+    } catch (err) {
+      console.error('Fetch products error:', err);
+    }
+  }, [adminToken]);
 
   useEffect(() => {
     if (!adminToken) {
@@ -16,21 +27,7 @@ export default function AdminDashboard() {
       return;
     }
     fetchProducts();
-  }, [adminToken, navigate]);
-
-  const fetchProducts = async () => {
-    try {
-      const baseURL = process.env.REACT_APP_API_BASE || 'http://localhost:5002';
-      const res = await fetch(`${baseURL}/api/admin/products`, {
-        headers: { Authorization: `Bearer ${adminToken}` }
-      });
-      if (res.ok) setProducts(await res.json());
-    } catch (err) {
-      console.error('Fetch products error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [adminToken, fetchProducts, navigate]);
 
   const handleLogout = () => {
     logoutAdmin();

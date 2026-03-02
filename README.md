@@ -164,24 +164,43 @@ The app comes with 6 sample products:
 
 ## Future Enhancements
 
-- [ ] Database integration (MongoDB/PostgreSQL)
 - [ ] Real payment gateway integration (Stripe/PayPal)
 - [ ] Product search and filtering
 - [ ] Product reviews and ratings
 - [ ] Order tracking
 - [ ] Wishlist feature
-- [ ] Admin dashboard
 - [ ] Email notifications
 - [ ] Two-factor authentication
 - [ ] Refresh token rotation
 
 ## Environment Variables
 
-### Server (.env)
+Copy the example files first:
+
+```bash
+cp server/.env.example server/.env
+cp client/.env.example client/.env
+```
+
+### Server (`server/.env`)
 ```
 PORT=5000
 NODE_ENV=development
-JWT_SECRET=your_jwt_secret_key_change_this_in_production_12345
+MONGODB_URI=mongodb://localhost:27017/shopping_app
+JWT_SECRET=replace_with_a_long_random_secret
+ADMIN_SECRET=replace_with_an_admin_setup_secret
+CORS_ORIGIN=http://localhost:3000
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+PAYSTACK_SECRET_KEY=your_paystack_secret_key
+PAYSTACK_PUBLIC_KEY=your_paystack_public_key
+```
+
+### Client (`client/.env`)
+```
+REACT_APP_API_BASE=http://localhost:5000
+REACT_APP_PAYSTACK_PUBLIC_KEY=your_paystack_public_key
 ```
 
 ### Important Security Notes
@@ -223,12 +242,24 @@ Use these to test the app:
 
 ## Notes
 
-- This is a demo application with in-memory user and order storage
-- For production, implement a proper database (MongoDB/PostgreSQL)
+- This app uses MongoDB for users, products, and orders
 - Password hashing uses bcryptjs with salt rounds of 10
-- JWT tokens include userId and email
+- JWT tokens include userId and email (+ `isAdmin` in profile/login payload)
+
+## Deployment Checklist
+
+1. Set all required env values in `server/.env` and `client/.env`.
+2. Ensure `REACT_APP_API_BASE` points to your deployed backend URL.
+3. Set `NODE_ENV=production` on the server.
+4. Build frontend with:
+   ```bash
+   cd client && npm run build
+   ```
+5. Run backend with:
+   ```bash
+   cd server && npm start
+   ```
 
 ## License
 
 MIT License
-
