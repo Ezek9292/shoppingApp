@@ -2,6 +2,21 @@ import { Product } from '../models/Product.js';
 import cloudinary from '../utils/cloudinary.js';
 import { uploadFromBuffer } from '../utils/cloudinary.js';
 
+const MAX_IMAGE_SIZE_BYTES = 1024 * 1024; // 1MB
+
+const bufferFromBase64Image = (image) => {
+  let base64Data = image;
+  const dataUrlMatch = /^data:(.+);base64,(.+)$/.exec(image);
+  if (dataUrlMatch) base64Data = dataUrlMatch[2];
+
+  const buffer = Buffer.from(base64Data, 'base64');
+  if (buffer.length > MAX_IMAGE_SIZE_BYTES) {
+    throw new Error('Image must be 1MB or less');
+  }
+
+  return buffer;
+};
+
 export const listProducts = async (req, res) => {
   try {
     const products = await Product.find();
@@ -21,10 +36,7 @@ export const createProduct = async (req, res) => {
 
     // Handle primary image
     if (image) {
-      let base64Data = image;
-      const dataUrlMatch = /^data:(.+);base64,(.+)$/.exec(image);
-      if (dataUrlMatch) base64Data = dataUrlMatch[2];
-      const buffer = Buffer.from(base64Data, 'base64');
+      const buffer = bufferFromBase64Image(image);
       const result = await uploadFromBuffer(buffer, { folder: 'shopping_app/products' });
       product.image = result.secure_url;
       product.imageId = result.public_id;
@@ -35,10 +47,7 @@ export const createProduct = async (req, res) => {
       product.images = [];
       for (const img of images) {
         if (!img) continue;
-        let base64Data = img;
-        const dataUrlMatch = /^data:(.+);base64,(.+)$/.exec(img);
-        if (dataUrlMatch) base64Data = dataUrlMatch[2];
-        const buffer = Buffer.from(base64Data, 'base64');
+        const buffer = bufferFromBase64Image(img);
         const result = await uploadFromBuffer(buffer, { folder: 'shopping_app/products' });
         product.images.push({ url: result.secure_url, imageId: result.public_id });
       }
@@ -48,6 +57,9 @@ export const createProduct = async (req, res) => {
     res.status(201).json(product);
   } catch (error) {
     console.error('Create product error:', error);
+    if (error.message === 'Image must be 1MB or less') {
+      return res.status(400).json({ error: error.message });
+    }
     res.status(500).json({ error: 'Failed to create product' });
   }
 };
@@ -66,10 +78,7 @@ export const updateProduct = async (req, res) => {
 
     // Handle primary image update
     if (image) {
-      let base64Data = image;
-      const dataUrlMatch = /^data:(.+);base64,(.+)$/.exec(image);
-      if (dataUrlMatch) base64Data = dataUrlMatch[2];
-      const buffer = Buffer.from(base64Data, 'base64');
+      const buffer = bufferFromBase64Image(image);
       const result = await uploadFromBuffer(buffer, { folder: 'shopping_app/products' });
       if (product.imageId) {
         try { await cloudinary.uploader.destroy(product.imageId); } catch (e) { /* ignore */ }
@@ -105,10 +114,7 @@ export const updateProduct = async (req, res) => {
             continue;
           }
 
-          let base64Data = img;
-          const dataUrlMatch = /^data:(.+);base64,(.+)$/.exec(img);
-          if (dataUrlMatch) base64Data = dataUrlMatch[2];
-          const buffer = Buffer.from(base64Data, 'base64');
+          const buffer = bufferFromBase64Image(img);
           const result = await uploadFromBuffer(buffer, { folder: 'shopping_app/products' });
           updatedImages.push({ url: result.secure_url, imageId: result.public_id });
         }
@@ -120,6 +126,9 @@ export const updateProduct = async (req, res) => {
     res.json(product);
   } catch (error) {
     console.error('Update product error:', error);
+    if (error.message === 'Image must be 1MB or less') {
+      return res.status(400).json({ error: error.message });
+    }
     res.status(500).json({ error: 'Failed to update product' });
   }
 };

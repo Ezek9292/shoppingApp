@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { API_BASE_URL } from '../config/api';
 import './AdminProductForm.css';
 
+const MAX_IMAGE_SIZE_BYTES = 1024 * 1024; // 1MB
+
 export default function AdminProductForm({ product, adminToken, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
     name: product?.name || '',
@@ -26,6 +28,13 @@ export default function AdminProductForm({ product, adminToken, onSuccess, onCan
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > MAX_IMAGE_SIZE_BYTES) {
+        setError('Primary image must be 1MB or less.');
+        e.target.value = '';
+        return;
+      }
+
+      setError('');
       const reader = new FileReader();
       reader.onload = (event) => {
         const base64 = event.target.result;
@@ -39,6 +48,14 @@ export default function AdminProductForm({ product, adminToken, onSuccess, onCan
   const handleGalleryChange = (e) => {
     const files = e.target.files;
     if (files) {
+      const oversizedFiles = Array.from(files).filter((file) => file.size > MAX_IMAGE_SIZE_BYTES);
+      if (oversizedFiles.length > 0) {
+        setError('Each gallery image must be 1MB or less.');
+        e.target.value = '';
+        return;
+      }
+
+      setError('');
       const newPreviews = [...galleryPreviews];
       let filesProcessed = 0;
 

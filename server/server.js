@@ -14,8 +14,6 @@ const { PORT = 5000, CORS_ORIGIN } = process.env;
 connectDB();
 
 // Middleware
-import cors from "cors";
-
 const allowedOrigins = CORS_ORIGIN ? CORS_ORIGIN.split(',').map(origin => origin.trim()) : [];
 
 app.use(cors({
@@ -41,7 +39,7 @@ app.use('/api/admin', adminRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
-  res.json({ message: 'Shopping App API' });
+  res.json({ message: 'NiceThings API' });
 });
 
 // Error handling middleware

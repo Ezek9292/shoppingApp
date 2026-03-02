@@ -10,7 +10,7 @@ const Header = ({ cartCount }) => {
     <header className="header">
       <div className="header-container">
         <Link to="/" className="logo">
-          <h1>Shopping App</h1>
+          <h1>NiceThings</h1>
         </Link>
         <nav className="nav">
           <Link to="/">Products</Link>
