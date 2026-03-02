@@ -80,31 +80,40 @@ export const updateProduct = async (req, res) => {
 
     // Handle multiple images update
     if (images !== undefined) {
-      // Delete old images
-      if (product.images && product.images.length > 0) {
-        for (const img of product.images) {
-          if (img.imageId) {
-            try { await cloudinary.uploader.destroy(img.imageId); } catch (e) { /* ignore */ }
-          }
+      const currentImages = product.images || [];
+      // Identify images to keep (URLs passed in body)
+      const imagesToKeep = images.filter(img => typeof img === 'string' && img.startsWith('http'));
+      
+      // Delete removed images from Cloudinary
+      const imagesToDelete = currentImages.filter(dbImg => !imagesToKeep.includes(dbImg.url));
+      for (const img of imagesToDelete) {
+        if (img.imageId) {
+          try { await cloudinary.uploader.destroy(img.imageId); } catch (e) { console.error('Cloudinary delete error', e); }
         }
       }
-      // Upload new images
-      product.images = [];
+
+      // Rebuild images array
+      const updatedImages = [];
       if (Array.isArray(images) && images.length > 0) {
         for (const img of images) {
-          if (!img || typeof img === 'string' && !img.includes('base64')) continue; // skip URLs from gallery
-          if (typeof img === 'string' && img.includes('https')) {
-            product.images.push({ url: img, imageId: null });
+          if (!img) continue;
+          
+          // Preserve existing images
+          if (typeof img === 'string' && img.startsWith('http')) {
+            const existing = currentImages.find(dbImg => dbImg.url === img);
+            updatedImages.push(existing || { url: img, imageId: null });
             continue;
           }
+
           let base64Data = img;
           const dataUrlMatch = /^data:(.+);base64,(.+)$/.exec(img);
           if (dataUrlMatch) base64Data = dataUrlMatch[2];
           const buffer = Buffer.from(base64Data, 'base64');
           const result = await uploadFromBuffer(buffer, { folder: 'shopping_app/products' });
-          product.images.push({ url: result.secure_url, imageId: result.public_id });
+          updatedImages.push({ url: result.secure_url, imageId: result.public_id });
         }
       }
+      product.images = updatedImages;
     }
 
     await product.save();

@@ -1,4 +1,5 @@
 import { Order } from '../models/Order.js';
+import { Product } from '../models/Product.js';
 import axios from 'axios';
 
 const PAYSTACK_API = 'https://api.paystack.co';
@@ -13,13 +14,31 @@ const validateOrderData = ({ firstName, lastName, email, address }) => {
 // Initialize Paystack payment for mobile money (Ghana)
 export const initializePayment = async (req, res) => {
   try {
-    const { firstName, lastName, email, address, items, total } = req.body;
+    const { firstName, lastName, email, address, items } = req.body;
     const userId = req.userId;
 
     // Validate data
     const validation = validateOrderData({ firstName, lastName, email, address });
     if (!validation.valid) {
       return res.status(400).json({ error: validation.error });
+    }
+
+    // Calculate total from DB to prevent tampering
+    let calculatedTotal = 0;
+    const orderItems = [];
+
+    for (const item of items) {
+      const product = await Product.findById(item._id || item.id);
+      if (!product) {
+        return res.status(404).json({ error: `Product not found: ${item.name}` });
+      }
+      calculatedTotal += product.price * item.quantity;
+      orderItems.push({
+        _id: product._id,
+        name: product.name,
+        quantity: item.quantity,
+        price: product.price
+      });
     }
 
     // Create temporary order
@@ -29,8 +48,8 @@ export const initializePayment = async (req, res) => {
       lastName,
       email,
       address,
-      items,
-      total,
+      items: orderItems,
+      total: calculatedTotal,
       status: 'pending',
       paymentMethod: 'paystack'
     });
@@ -39,13 +58,13 @@ export const initializePayment = async (req, res) => {
     // Initialize Paystack payment
     const paystackConfig = {
       email: email,
-      amount: Math.round(total * 100), // Paystack uses kobo (cents)
+      amount: Math.round(calculatedTotal * 100), // Paystack uses kobo (cents)
       metadata: {
         orderId: order._id.toString(),
         firstName,
         lastName,
         address,
-        items: items.map(item => ({
+        items: orderItems.map(item => ({
           id: item._id,
           name: item.name,
           quantity: item.quantity,
@@ -194,4 +213,3 @@ export const getOrder = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch order' });
   }
 };
-
