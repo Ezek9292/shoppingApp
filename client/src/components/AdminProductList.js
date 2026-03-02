@@ -63,7 +63,7 @@ export default function AdminProductList({ products, adminToken, onProductsUpdat
             <div className="product-info">
               <h3>{product.name}</h3>
               <p className="product-description">{product.description}</p>
-              <p className="product-price">${product.price}</p>
+              <p className="product-price">GHS {Number(product.price).toFixed(2)}</p>
               <p className="product-stock">Stock: {product.stock}</p>
               <div className="product-actions">
                 <button className="edit-btn" onClick={() => handleEdit(product)}>

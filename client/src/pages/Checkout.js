@@ -283,11 +283,8 @@ const Checkout = ({ cartItems }) => {
           )}
 
           <button type="submit" className="submit-btn" disabled={processing}>
-            {processing ? 'Processing...' : `${paymentMethod === 'mobile-money' ? 'Pay with Mobile Money' : 'Pay'} GHS ${(total * 6.5).toFixed(2)}`}
+            {processing ? 'Processing...' : `${paymentMethod === 'mobile-money' ? 'Pay with Mobile Money' : 'Pay'} GHS ${total.toFixed(2)}`}
           </button>
-          <small style={{ display: 'block', marginTop: '10px', textAlign: 'center', color: '#666' }}>
-            Approximate amount: GHS {(total * 6.5).toFixed(2)} (1 USD ≈ 6.5 GHS)
-          </small>
         </form>
 
         <div className="order-summary">
@@ -296,13 +293,12 @@ const Checkout = ({ cartItems }) => {
             {cartItems.map(item => (
               <div key={item._id || item.id} className="summary-item">
                 <span>{item.name} x {item.quantity}</span>
-                <span>${(item.price * item.quantity).toFixed(2)}</span>
+                <span>GHS {(item.price * item.quantity).toFixed(2)}</span>
               </div>
             ))}
           </div>
           <div className="summary-total">
-            <strong>Total: ${total.toFixed(2)}</strong>
-            <small>≈ GHS {(total * 6.5).toFixed(2)}</small>
+            <strong>Total: GHS {total.toFixed(2)}</strong>
           </div>
         </div>
       </div>

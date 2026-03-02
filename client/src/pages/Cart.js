@@ -26,7 +26,7 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
           <div key={item.id} className="cart-item">
             <div className="item-details">
               <h4>{item.name}</h4>
-              <p>${item.price.toFixed(2)}</p>
+              <p>GHS {item.price.toFixed(2)}</p>
             </div>
             <div className="item-quantity">
               <button onClick={() => updateQuantity(item.id, item.quantity - 1)} type="button">-</button>
@@ -39,7 +39,7 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
               <button onClick={() => updateQuantity(item.id, item.quantity + 1)} type="button">+</button>
             </div>
             <div className="item-total">
-              ${(item.price * item.quantity).toFixed(2)}
+              GHS {(item.price * item.quantity).toFixed(2)}
             </div>
             <button
               className="remove-btn"
@@ -53,7 +53,7 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
       </div>
       <div className="cart-summary">
         <div className="total">
-          <h3>Total: ${calculateTotal().toFixed(2)}</h3>
+          <h3>Total: GHS {calculateTotal().toFixed(2)}</h3>
         </div>
         <div className="cart-actions">
           <Link to="/" className="continue-shopping">Continue Shopping</Link>

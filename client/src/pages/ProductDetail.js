@@ -82,7 +82,7 @@ const ProductDetail = ({ addToCart }) => {
           <h1>{product.name}</h1>
           
           <div className="price-section">
-            <p className="price">${product.price.toFixed(2)}</p>
+            <p className="price">GHS {product.price.toFixed(2)}</p>
             {product.stock > 0 ? (
               <p className="stock in-stock">✓ In Stock ({product.stock})</p>
             ) : (
