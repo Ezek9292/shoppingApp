@@ -14,8 +14,22 @@ const { PORT = 5000, CORS_ORIGIN } = process.env;
 connectDB();
 
 // Middleware
+import cors from "cors";
+
+const allowedOrigins = CORS_ORIGIN ? CORS_ORIGIN.split(',').map(origin => origin.trim()) : [];
+
 app.use(cors({
-  origin: CORS_ORIGIN ? CORS_ORIGIN.split(',').map((origin) => origin.trim()) : '*'
+  origin: function(origin, callback){
+    // allow requests with no origin (like Postman or mobile apps)
+    if(!origin) return callback(null, true);
+
+    if(allowedOrigins.includes(origin)){
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed for this origin'), false);
+    }
+  },
+  credentials: true
 }));
 app.use(express.json());
 
