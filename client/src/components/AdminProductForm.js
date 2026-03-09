@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { API_BASE_URL } from '../config/api';
+import { PRODUCT_CATEGORIES } from '../constants/categories';
+import { PRODUCT_COLORS, PRODUCT_SIZES } from '../constants/productOptions';
 import './AdminProductForm.css';
 
 const MAX_IMAGE_SIZE_BYTES = 1024 * 1024; // 1MB
@@ -8,6 +10,9 @@ export default function AdminProductForm({ product, adminToken, onSuccess, onCan
   const [formData, setFormData] = useState({
     name: product?.name || '',
     description: product?.description || '',
+    category: product?.category || 'Accessories',
+    sizes: product?.sizes || [],
+    colors: product?.colors || [],
     price: product?.price || '',
     stock: product?.stock || '',
     image: null,
@@ -23,6 +28,17 @@ export default function AdminProductForm({ product, adminToken, onSuccess, onCan
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const toggleMultiSelect = (field, value) => {
+    setFormData((prev) => {
+      const current = Array.isArray(prev[field]) ? prev[field] : [];
+      const exists = current.includes(value);
+      return {
+        ...prev,
+        [field]: exists ? current.filter((item) => item !== value) : [...current, value]
+      };
+    });
   };
 
   const handleImageChange = (e) => {
@@ -107,6 +123,9 @@ export default function AdminProductForm({ product, adminToken, onSuccess, onCan
         body: JSON.stringify({
           name: formData.name,
           description: formData.description,
+          category: formData.category,
+          sizes: formData.sizes,
+          colors: formData.colors,
           price: parseFloat(formData.price),
           stock: parseInt(formData.stock, 10),
           image: formData.image,
@@ -150,6 +169,54 @@ export default function AdminProductForm({ product, adminToken, onSuccess, onCan
               rows={4}
               required
             />
+          </div>
+
+          <div className="form-group">
+            <label>Category</label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+            >
+              {PRODUCT_CATEGORIES.map((category) => (
+                <option key={category.value} value={category.value}>
+                  {category.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Available Sizes</label>
+            <div className="chip-options">
+              {PRODUCT_SIZES.map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  className={`chip-option ${formData.sizes.includes(size) ? 'selected' : ''}`}
+                  onClick={() => toggleMultiSelect('sizes', size)}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Available Colors</label>
+            <div className="chip-options">
+              {PRODUCT_COLORS.map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  className={`chip-option ${formData.colors.includes(color) ? 'selected' : ''}`}
+                  onClick={() => toggleMultiSelect('colors', color)}
+                >
+                  {color}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="form-row">
@@ -225,7 +292,7 @@ export default function AdminProductForm({ product, adminToken, onSuccess, onCan
                       <img src={preview.url} alt={`Gallery ${idx}`} />
                       <button
                         type="button"
-                        className="remove-btn"
+                        className="gallery-remove-btn"
                         onClick={() => removeGalleryImage(idx)}
                       >
                         ×

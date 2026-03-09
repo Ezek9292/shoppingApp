@@ -1,6 +1,8 @@
 import { Product } from '../models/Product.js';
 import cloudinary from '../utils/cloudinary.js';
 import { uploadFromBuffer } from '../utils/cloudinary.js';
+import { DEFAULT_PRODUCT_CATEGORY, normalizeCategory } from '../constants/productCategories.js';
+import { normalizeColors, normalizeSizes } from '../constants/productVariants.js';
 
 const MAX_IMAGE_SIZE_BYTES = 1024 * 1024; // 1MB
 
@@ -19,8 +21,17 @@ const bufferFromBase64Image = (image) => {
 
 export const listProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.json(products);
+    const products = await Product.find().sort({ createdAt: -1 });
+    const normalizedProducts = products.map((product) => {
+      const base = product.toObject();
+      return {
+        ...base,
+        category: product.category || DEFAULT_PRODUCT_CATEGORY,
+        sizes: normalizeSizes(base.sizes),
+        colors: normalizeColors(base.colors)
+      };
+    });
+    res.json(normalizedProducts);
   } catch (error) {
     console.error('List products error:', error);
     res.status(500).json({ error: 'Failed to list products' });
@@ -29,10 +40,18 @@ export const listProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, price, stock, image, images } = req.body;
+    const { name, description, price, stock, category, sizes, colors, image, images } = req.body;
     if (!name || !description || price == null) return res.status(400).json({ error: 'Missing fields' });
 
-    const product = new Product({ name, description, price, stock: stock || 0 });
+    const product = new Product({
+      name,
+      description,
+      price,
+      stock: stock || 0,
+      category: normalizeCategory(category),
+      sizes: normalizeSizes(sizes),
+      colors: normalizeColors(colors)
+    });
 
     // Handle primary image
     if (image) {
@@ -67,7 +86,7 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, stock, image, images } = req.body;
+    const { name, description, price, stock, category, sizes, colors, image, images } = req.body;
     const product = await Product.findById(id);
     if (!product) return res.status(404).json({ error: 'Product not found' });
 
@@ -75,6 +94,9 @@ export const updateProduct = async (req, res) => {
     if (description) product.description = description;
     if (price != null) product.price = price;
     if (stock != null) product.stock = stock;
+    if (category) product.category = normalizeCategory(category);
+    if (sizes !== undefined) product.sizes = normalizeSizes(sizes);
+    if (colors !== undefined) product.colors = normalizeColors(colors);
 
     // Handle primary image update
     if (image) {

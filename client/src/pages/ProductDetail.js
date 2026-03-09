@@ -51,6 +51,7 @@ const ProductDetail = ({ addToCart }) => {
       return;
     }
     addToCart(product, quantity);
+    navigate('/');
   };
 
   return (
@@ -93,6 +94,29 @@ const ProductDetail = ({ addToCart }) => {
           <div className="description">
             <h3>Description</h3>
             <p>{product.description}</p>
+          </div>
+
+          <div className="variant-section">
+            {product.sizes?.length > 0 && (
+              <div className="variant-row">
+                <span className="variant-label">Sizes:</span>
+                <div className="variant-chips">
+                  {product.sizes.map((size) => (
+                    <span key={size} className="variant-chip">{size}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {product.colors?.length > 0 && (
+              <div className="variant-row">
+                <span className="variant-label">Colors:</span>
+                <div className="variant-chips">
+                  {product.colors.map((color) => (
+                    <span key={color} className="variant-chip">{color}</span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="purchase-section">

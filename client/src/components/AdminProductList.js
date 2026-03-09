@@ -56,13 +56,16 @@ export default function AdminProductList({ products, adminToken, onProductsUpdat
         />
       )}
 
-      <div className="products-grid">
+      <div className="admin-products-grid">
         {products.map((product) => (
-          <div key={product._id} className="product-card">
+          <div key={product._id} className="admin-product-card">
             <img src={product.image} alt={product.name} />
-            <div className="product-info">
+            <div className="admin-product-info">
               <h3>{product.name}</h3>
               <p className="product-description">{product.description}</p>
+              <p className="product-category">Category: {product.category || 'Accessories'}</p>
+              <p className="product-category">Sizes: {product.sizes?.length ? product.sizes.join(', ') : 'N/A'}</p>
+              <p className="product-category">Colors: {product.colors?.length ? product.colors.join(', ') : 'N/A'}</p>
               <p className="product-price">GHS {Number(product.price).toFixed(2)}</p>
               <p className="product-stock">Stock: {product.stock}</p>
               <div className="product-actions">

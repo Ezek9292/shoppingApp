@@ -99,7 +99,7 @@
 }
 
 .price {
-  font-size: 32px;
+  font-size: 24px;
   font-weight: bold;
   color: #667eea;
   margin: 0;
@@ -140,6 +140,39 @@
   color: #666;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+.variant-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.variant-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.variant-label {
+  font-weight: 600;
+  color: #333;
+  min-width: 56px;
+}
+
+.variant-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.variant-chip {
+  font-size: 0.82rem;
+  border: 1px solid #ead6c8;
+  border-radius: 999px;
+  padding: 5px 10px;
+  color: #5c534d;
+  background: #fff9f5;
 }
 
 .purchase-section {
@@ -279,6 +312,6 @@
   }
 
   .price {
-    font-size: 24px;
+    font-size: 20px;
   }
 }

@@ -1,49 +1,73 @@
 import { Product } from '../models/Product.js';
 import cloudinary from '../utils/cloudinary.js';
 import { uploadFromBuffer } from '../utils/cloudinary.js';
+import {
+  DEFAULT_PRODUCT_CATEGORY,
+  PRODUCT_CATEGORIES,
+  normalizeCategory
+} from '../constants/productCategories.js';
+import { normalizeColors, normalizeSizes } from '../constants/productVariants.js';
 
 // Seed defaults for first-time database setup.
 const SAMPLE_PRODUCTS = [
   {
-    name: 'Laptop',
-    description: 'High-performance laptop with 16GB RAM and SSD',
-    price: 999.99,
-    image: 'https://via.placeholder.com/200?text=Laptop',
+    name: 'Urban Runner Sneakers',
+    description: 'Lightweight everyday sneakers for city comfort.',
+    category: 'Footware',
+    sizes: ['M', 'L', 'XL'],
+    colors: ['Black', 'White'],
+    price: 199.99,
+    image: 'https://via.placeholder.com/200?text=Footware',
     stock: 50
   },
   {
-    name: 'Mouse',
-    description: 'Wireless ergonomic mouse',
-    price: 29.99,
-    image: 'https://via.placeholder.com/200?text=Mouse',
+    name: 'Cotton Casual Shirt',
+    description: 'Breathable men and women unisex casual shirt.',
+    category: 'Clothing',
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: ['Blue', 'White', 'Gray'],
+    price: 89.99,
+    image: 'https://via.placeholder.com/200?text=Clothing',
     stock: 200
   },
   {
-    name: 'Keyboard',
-    description: 'Mechanical gaming keyboard with RGB',
-    price: 79.99,
-    image: 'https://via.placeholder.com/200?text=Keyboard',
+    name: 'Glow Pro Makeup Kit',
+    description: 'Complete cosmetics set for daily and event looks.',
+    category: 'Cosmetics',
+    sizes: ['One Size'],
+    colors: ['Pink', 'Gold'],
+    price: 129.99,
+    image: 'https://via.placeholder.com/200?text=Cosmetics',
     stock: 150
   },
   {
-    name: 'Monitor',
-    description: '27" 4K UHD Monitor',
+    name: 'Classic Leather Watch',
+    description: 'Elegant watch with premium leather strap.',
+    category: 'Watches',
+    sizes: ['One Size'],
+    colors: ['Black', 'Brown', 'Silver'],
     price: 399.99,
-    image: 'https://via.placeholder.com/200?text=Monitor',
+    image: 'https://via.placeholder.com/200?text=Watches',
     stock: 75
   },
   {
-    name: 'Headphones',
-    description: 'Active noise-cancelling headphones',
-    price: 199.99,
-    image: 'https://via.placeholder.com/200?text=Headphones',
+    name: 'Signature Tote Bag',
+    description: 'Spacious handbag for work, travel, and lifestyle.',
+    category: 'Bags',
+    sizes: ['One Size'],
+    colors: ['Brown', 'Black', 'Beige'],
+    price: 179.99,
+    image: 'https://via.placeholder.com/200?text=Bags',
     stock: 100
   },
   {
-    name: 'Webcam',
-    description: '1080p HD webcam',
-    price: 89.99,
-    image: 'https://via.placeholder.com/200?text=Webcam',
+    name: 'Silver Chain Accessory Set',
+    description: 'Accessories bundle with chain, bracelet, and rings.',
+    category: 'Accessories',
+    sizes: ['One Size'],
+    colors: ['Silver', 'Gold'],
+    price: 69.99,
+    image: 'https://via.placeholder.com/200?text=Accessories',
     stock: 120
   }
 ];
@@ -63,8 +87,32 @@ export const initializeProducts = async () => {
 // Get all products
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.json(products);
+    const { q = '', category = '' } = req.query;
+    const filter = {};
+
+    if (category && PRODUCT_CATEGORIES.some((item) => item.toLowerCase() === String(category).toLowerCase())) {
+      filter.category = normalizeCategory(category);
+    }
+
+    if (q && String(q).trim()) {
+      const escaped = String(q).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      filter.$or = [
+        { name: { $regex: escaped, $options: 'i' } },
+        { description: { $regex: escaped, $options: 'i' } }
+      ];
+    }
+
+    const products = await Product.find(filter).sort({ createdAt: -1 });
+    const normalizedProducts = products.map((product) => {
+      const base = product.toObject();
+      return {
+        ...base,
+        category: product.category || DEFAULT_PRODUCT_CATEGORY,
+        sizes: normalizeSizes(base.sizes),
+        colors: normalizeColors(base.colors)
+      };
+    });
+    res.json(normalizedProducts);
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).json({ error: 'Failed to fetch products' });
@@ -78,7 +126,13 @@ export const getProductById = async (req, res) => {
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
-    res.json(product);
+    const base = product.toObject();
+    res.json({
+      ...base,
+      category: product.category || DEFAULT_PRODUCT_CATEGORY,
+      sizes: normalizeSizes(base.sizes),
+      colors: normalizeColors(base.colors)
+    });
   } catch (error) {
     console.error('Error fetching product:', error);
     res.status(500).json({ error: 'Failed to fetch product' });

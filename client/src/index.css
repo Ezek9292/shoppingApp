@@ -1,23 +1,45 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+:root {
+  --primary: #f65c1f;
+  --primary-dark: #df4e16;
+  --accent-pink: #f4e6f1;
+  --accent-peach: #fbc796;
+  --accent-cyan: #b3e8f7;
+  --surface: #ffffff;
+  --surface-soft: #fffaf5;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --line: #f1dfd3;
+  --shadow-soft: 0 12px 28px rgba(40, 27, 21, 0.08);
+  --shadow-hover: 0 18px 38px rgba(40, 27, 21, 0.12);
+  --radius-md: 14px;
+  --radius-lg: 20px;
 }
 
 * {
   box-sizing: border-box;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   margin: 0;
   padding: 0;
+}
+
+body {
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background:
+    radial-gradient(circle at 14% 16%, rgba(251, 199, 150, 0.5) 0, rgba(251, 199, 150, 0) 46%),
+    radial-gradient(circle at 86% 10%, rgba(179, 232, 247, 0.45) 0, rgba(179, 232, 247, 0) 45%),
+    linear-gradient(135deg, #fffdfb 0%, #fff7ef 45%, #fefcff 100%);
+}
+
+a {
+  color: inherit;
 }

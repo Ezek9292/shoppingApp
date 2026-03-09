@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import { DEFAULT_PRODUCT_CATEGORY, PRODUCT_CATEGORIES } from '../constants/productCategories.js';
+import { PRODUCT_COLORS, PRODUCT_SIZES } from '../constants/productVariants.js';
 
 const productSchema = new mongoose.Schema(
   {
@@ -13,6 +15,11 @@ const productSchema = new mongoose.Schema(
     description: {
       type: String,
       required: true
+    },
+    category: {
+      type: String,
+      enum: PRODUCT_CATEGORIES,
+      default: DEFAULT_PRODUCT_CATEGORY
     },
     image: {
       type: String,
@@ -31,9 +38,30 @@ const productSchema = new mongoose.Schema(
     stock: {
       type: Number,
       default: 100
-    }
+    },
+    sizes: [
+      {
+        type: String,
+        enum: PRODUCT_SIZES
+      }
+    ],
+    colors: [
+      {
+        type: String,
+        enum: PRODUCT_COLORS
+      }
+    ]
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: {
+      transform: (_, ret) => {
+        ret.sizes = Array.isArray(ret.sizes) ? ret.sizes : [];
+        ret.colors = Array.isArray(ret.colors) ? ret.colors : [];
+        return ret;
+      }
+    }
+  }
 );
 
 export const Product = mongoose.model('Product', productSchema);
