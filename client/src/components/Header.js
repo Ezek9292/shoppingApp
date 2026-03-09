@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { ALL_CATEGORY, PRODUCT_CATEGORIES } from '../constants/categories';
+import { ALL_CATEGORY, PRODUCT_CATEGORIES, normalizeCategory } from '../constants/categories';
 import './Header.css';
 
 const Header = ({ cartCount }) => {
@@ -9,7 +9,7 @@ const Header = ({ cartCount }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
-  const selectedCategory = searchParams.get('category') || ALL_CATEGORY;
+  const selectedCategory = normalizeCategory(searchParams.get('category') || ALL_CATEGORY);
 
   useEffect(() => {
     setSearchTerm(searchParams.get('q') || '');
@@ -22,10 +22,11 @@ const Header = ({ cartCount }) => {
 
   const getSearchWith = (nextCategory) => {
     const params = new URLSearchParams(searchParams);
+    params.delete('q');
     if (!nextCategory || nextCategory === ALL_CATEGORY) {
       params.delete('category');
     } else {
-      params.set('category', nextCategory);
+      params.set('category', normalizeCategory(nextCategory));
     }
     return params.toString() ? `?${params.toString()}` : '';
   };

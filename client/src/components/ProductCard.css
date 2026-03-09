@@ -50,7 +50,7 @@
   font-weight: 600;
 }
 
-.description {
+.product-card-description {
   color: var(--text-muted);
   font-size: 0.9rem;
   margin: 0 0 10px 0;
@@ -63,14 +63,14 @@
   flex-grow: 1;
 }
 
-.price {
+.product-card-price {
   font-size: 1rem;
   font-weight: 700;
   color: var(--primary);
   margin: 8px 0 0 0;
 }
 
-.variants-text {
+.product-card-variants {
   margin: 6px 0 0;
   font-size: 0.78rem;
   color: #786c65;

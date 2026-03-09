@@ -23,11 +23,13 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
       <h2>Shopping Cart</h2>
       <div className="cart-items">
         {cartItems.map(item => (
-          <div key={item._id || item.id} className="cart-item">
-            <div className="item-details">
-              <h4>{item.name}</h4>
-              <p>GHS {item.price.toFixed(2)}</p>
-            </div>
+            <div key={item._id || item.id} className="cart-item">
+              <div className="item-details">
+                <h4>{item.name}</h4>
+                <p>GHS {item.price.toFixed(2)}</p>
+                <p className="item-variant">Sizes: {item.sizes?.length ? item.sizes.join(', ') : 'Not specified'}</p>
+                <p className="item-variant">Colors: {item.colors?.length ? item.colors.join(', ') : 'Not specified'}</p>
+              </div>
             <div className="item-quantity">
               <button onClick={() => updateQuantity(item._id || item.id, item.quantity - 1)} type="button">-</button>
               <input

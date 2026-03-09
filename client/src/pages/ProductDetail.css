@@ -98,7 +98,7 @@
   gap: 20px;
 }
 
-.price {
+.detail-price {
   font-size: 24px;
   font-weight: bold;
   color: #667eea;
@@ -123,18 +123,18 @@
   color: #c62828;
 }
 
-.description {
+.detail-description {
   padding: 20px;
   background: #f9f9f9;
   border-radius: 8px;
 }
 
-.description h3 {
+.detail-description h3 {
   margin-top: 0;
   color: #333;
 }
 
-.description p {
+.detail-description p {
   margin: 0;
   line-height: 1.6;
   color: #666;
@@ -173,6 +173,10 @@
   padding: 5px 10px;
   color: #5c534d;
   background: #fff9f5;
+}
+
+.variant-chip.muted {
+  color: #7b736e;
 }
 
 .purchase-section {
@@ -311,7 +315,7 @@
     font-size: 24px;
   }
 
-  .price {
+  .detail-price {
     font-size: 20px;
   }
 }

@@ -10,14 +10,10 @@ const ProductCard = ({ product, onAddToCart }) => (
       </div>
       <div className="product-info">
         <h3>{product.name}</h3>
-        <p className="description">{product.description}</p>
-        <p className="price">GHS {product.price.toFixed(2)}</p>
-        {product.sizes?.length > 0 && (
-          <p className="variants-text">Sizes: {product.sizes.join(', ')}</p>
-        )}
-        {product.colors?.length > 0 && (
-          <p className="variants-text">Colors: {product.colors.join(', ')}</p>
-        )}
+        <p className="product-card-description">{product.description}</p>
+        <p className="product-card-price">GHS {product.price.toFixed(2)}</p>
+        <p className="product-card-variants">Sizes: {product.sizes?.length ? product.sizes.join(', ') : 'Not specified'}</p>
+        <p className="product-card-variants">Colors: {product.colors?.length ? product.colors.join(', ') : 'Not specified'}</p>
       </div>
     </Link>
     <button

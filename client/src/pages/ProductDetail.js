@@ -83,7 +83,7 @@ const ProductDetail = ({ addToCart }) => {
           <h1>{product.name}</h1>
           
           <div className="price-section">
-            <p className="price">GHS {product.price.toFixed(2)}</p>
+            <p className="detail-price">GHS {product.price.toFixed(2)}</p>
             {product.stock > 0 ? (
               <p className="stock in-stock">✓ In Stock ({product.stock})</p>
             ) : (
@@ -91,32 +91,36 @@ const ProductDetail = ({ addToCart }) => {
             )}
           </div>
 
-          <div className="description">
+          <div className="detail-description">
             <h3>Description</h3>
             <p>{product.description}</p>
           </div>
 
           <div className="variant-section">
-            {product.sizes?.length > 0 && (
-              <div className="variant-row">
-                <span className="variant-label">Sizes:</span>
-                <div className="variant-chips">
-                  {product.sizes.map((size) => (
+            <div className="variant-row">
+              <span className="variant-label">Sizes:</span>
+              <div className="variant-chips">
+                {product.sizes?.length ? (
+                  product.sizes.map((size) => (
                     <span key={size} className="variant-chip">{size}</span>
-                  ))}
-                </div>
+                  ))
+                ) : (
+                  <span className="variant-chip muted">Not specified</span>
+                )}
               </div>
-            )}
-            {product.colors?.length > 0 && (
-              <div className="variant-row">
-                <span className="variant-label">Colors:</span>
-                <div className="variant-chips">
-                  {product.colors.map((color) => (
+            </div>
+            <div className="variant-row">
+              <span className="variant-label">Colors:</span>
+              <div className="variant-chips">
+                {product.colors?.length ? (
+                  product.colors.map((color) => (
                     <span key={color} className="variant-chip">{color}</span>
-                  ))}
-                </div>
+                  ))
+                ) : (
+                  <span className="variant-chip muted">Not specified</span>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           <div className="purchase-section">

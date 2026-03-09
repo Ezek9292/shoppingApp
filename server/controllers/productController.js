@@ -90,7 +90,7 @@ export const getAllProducts = async (req, res) => {
     const { q = '', category = '' } = req.query;
     const filter = {};
 
-    if (category && PRODUCT_CATEGORIES.some((item) => item.toLowerCase() === String(category).toLowerCase())) {
+    if (category && String(category).trim()) {
       filter.category = normalizeCategory(category);
     }
 

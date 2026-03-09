@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { API_BASE_URL } from '../config/api';
-import { ALL_CATEGORY } from '../constants/categories';
+import { ALL_CATEGORY, normalizeCategory } from '../constants/categories';
 import './ProductList.css';
 
 const normalize = (value = '') => value.toLowerCase();
@@ -14,7 +14,7 @@ const ProductList = ({ addToCart }) => {
   const [searchParams] = useSearchParams();
 
   const query = (searchParams.get('q') || '').trim();
-  const selectedCategory = searchParams.get('category') || ALL_CATEGORY;
+  const selectedCategory = normalizeCategory(searchParams.get('category') || ALL_CATEGORY);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -40,7 +40,7 @@ const ProductList = ({ addToCart }) => {
     const normalizedQuery = normalize(query);
 
     return products.filter((product) => {
-      const category = product.category || 'Accessories';
+      const category = normalizeCategory(product.category || 'Accessories');
       const inCategory = selectedCategory === ALL_CATEGORY || category === selectedCategory;
       if (!inCategory) return false;
 

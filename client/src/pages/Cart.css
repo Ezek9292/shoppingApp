@@ -58,6 +58,13 @@
   font-weight: 600;
 }
 
+.item-details .item-variant {
+  margin-top: 4px;
+  color: #7a6d66;
+  font-weight: 500;
+  font-size: 0.82rem;
+}
+
 .item-quantity {
   display: flex;
   gap: 10px;
